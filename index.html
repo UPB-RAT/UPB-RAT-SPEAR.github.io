@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="LLMAR turns LLM-drafted reward functions into executable, interface-validated code for reinforcement learning.">
+  <meta name="keywords" content="LLMAR, reward design, LLM, reinforcement learning, DPO, program validation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLMAR: Validated LLM-Generated Reward Functions for RL</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="#">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          Paper
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="#abstract">
+            Abstract
+          </a>
+          <a class="navbar-item" href="#method">
+            Method
+          </a>
+          <a class="navbar-item" href="#results">
+            Results
+          </a>
+          <a class="navbar-item" href="#status">
+            Status
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">LLMAR - Auto-reward Generator for UAV Navigation with Large Language Model</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Avishkar Arjan,</span>
+            <span class="author-block">Van Huyen Dang,</span>
+            <span class="author-block">Erdal Kayacan</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Automatic Control Group, Department of Mechanical Engineering, Paderborn University</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/UPB-RAT/llm-reward-pipeline"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        
+        <div class="item item-dpo">
+          <img src="./static/images/dpo_loop.svg" alt="DPO preference-optimization loop."/>
+        </div>
+        <div class="item item-prompt">
+          <img src="./static/images/prompt.png" alt="Prompt structure."/>
+        </div>
+        <div class="item item-sr">
+          <img src="./static/images/level_2_dpo_finetune_sr.png" alt="Success rate over preference-optimization iterations."/>
+        </div>
+        <div class="item item-loss">
+          <img src="./static/images/qwen_coder_loss.png" alt="Training loss curve."/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            A policy is bounded by the scalar signal a designer writes for it, and that signal
+            must be re-derived by hand for every task and every assumption about the
+            environment, which is the least automated and most consequential step in reinforcement
+            learning. Code-capable language models can draft such a reward, but their proposals
+            fail in three distinguishable ways - not extractable, unsound, or an interface
+            violation, and each needs a differently priced remedy. We treat reward design as
+            constrained code generation: a three-stage validator turns free-form output into an
+            executable reward with a categorical, prompt-repairable failure code, and only valid
+            code reaches success-rate scoring, whose outcome returns as preferences. The
+            interface is declared per environment rather than fixed by signature, and one
+            permissively released open-source code model is adapted in two stages that are
+            trained separately and have not yet been combined. Our end goal is an agent that
+            flies a quadcopter in Isaac Lab on a model-written reward; we report what has been
+            measured so far, and what remains untested, including the policy-training ground
+            truth that would confirm our proxy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="method">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            The pipeline runs as a continual loop: an LLM drafts reward code, a validator
+            gates it, valid candidates are scored, and the results feed back as preference
+            pairs for DPO training.
+          </p>
+        </div>
+
+        <div class="content has-text-centered">
+          <img src="./static/images/dpo_loop.svg" alt="DPO preference-optimization loop: draft, validate, score, feedback."
+               style="max-width: auto; width: 100%; height: auto;"/>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            The main loop: the LLM drafts candidate reward code, a three-stage validator
+            gates it, valid rewards are scored by a fast proxy success rate under a fixed
+            reference policy, and the resulting preference pairs train the generator with
+            direct preference optimization (DPO). A semantic reflection channel summarizes
+            the elite solution to guide the next iteration.
+          </p>
+        </div>
+
+        <h3 class="title is-4">Three-stage validator</h3>
+        <div class="table-container">
+          <table class="table is-bordered is-striped">
+            <thead>
+              <tr><th>Stage</th><th>Question</th><th>Failure code</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>C1 &middot; Extractability</td><td>Is there a program at all?</td><td><code>no_code_block</code></td></tr>
+              <tr><td>C2 &middot; Static safety</td><td>Well-formed, terminating, side-effect-free?</td><td><code>missing_entry_point</code>, <code>forbidden_import</code>, <code>self_attr_access</code>, <code>loop_detected</code>, <code>forbidden_builtin</code>, <code>too_similar_to_reference</code></td></tr>
+              <tr><td>C3 &middot; Runtime check</td><td>Returns the declared type against the declared attributes?</td><td><code>runtime_call_failed</code>, <code>not_a_tensor</code>, <code>shape_mismatch</code>, <code>nonfinite_output</code>, <code>dim_out_of_range</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            Valid candidates are scored by a <strong>fast proxy success rate</strong> under a
+            fixed reference policy in LunarLander-v3. The ordering becomes preference pairs
+            that train the generator with DPO, alongside a semantic reflection channel
+            summarizing the elite solution.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="results">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Results</h2>
+
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <h3 class="title is-5 has-text-centered">First-attempt acceptance (Table VII)</h3>
+            <div class="table-container">
+              <table class="table is-bordered is-striped has-text-centered">
+                <thead><tr><th>Model</th><th>Repair</th><th>Accept</th><th>Rate</th></tr></thead>
+                <tbody>
+                  <tr><td>Base Qwen2.5 Coder 7B</td><td>no</td><td>134</td><td>13.4%</td></tr>
+                  <tr><td>Base Qwen2.5 Coder 7B</td><td>yes</td><td>672</td><td>67.2%</td></tr>
+                  <tr><td>Finetuned Qwen2.5 Coder 7B</td><td>no</td><td>823</td><td>82.3%</td></tr>
+                  <tr><td>Finetuned Qwen2.5 Coder 7B</td><td>yes</td><td>836</td><td>82.9%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="column is-half">
+            <h3 class="title is-5 has-text-centered">Preference optimization over 5 iterations (Table IX)</h3>
+            <div class="table-container">
+              <table class="table is-bordered is-striped has-text-centered">
+                 <thead><tr><th>Iter</th><th>Valid%</th><th>Mean Success Rate</th><th>P20</th><th>DPO Pairs</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>16.1</td><td>0.484</td><td>0.178</td><td>96</td></tr>
+                  <tr><td>2</td><td>21.5</td><td>0.738</td><td>0.483</td><td>130</td></tr>
+                  <tr><td>3</td><td>44.3</td><td>0.724</td><td>0.520</td><td>268</td></tr>
+                  <tr><td>4</td><td>44.3</td><td>0.721</td><td>0.474</td><td>268</td></tr>
+                  <tr><td>5</td><td>23.3</td><td>0.730</td><td>0.521</td><td>142</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            Fine-tuning raises unaided acceptance from 13.4% to 82.3% and eliminates the coarse
+            type/shape failures that dominated the base model. The repair channel is worth most
+            where the backbone knows least: +53.8 points to the base model, +0.6 to the
+            fine-tuned one. Over five DPO iterations the mean success rate rises from 0.484 to
+            0.730 and the worst-20% quantile from 0.178 to 0.521.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="status">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Status</h2>
+
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <h3 class="title is-5">In place and measured</h3>
+            <ul>
+              <li>Three-stage validator with categorical failure codes and auditable rejections.</li>
+              <li>Generation-and-repair loop; acceptance measured on 1000 held-out prompts.</li>
+              <li>Reward dataset of 7095 rows from 889 accepted seeds.</li>
+              <li>SFT of one open backbone (Qwen2.5-Coder-7B, LoRA, 4-bit).</li>
+              <li>Fast proxy success rate + 5-iteration DPO loop with reflection channel.</li>
+            </ul>
+          </div>
+          <div class="column is-half">
+            <h3 class="title is-5">Planned next</h3>
+            <ul>
+              <li>Ground-truth preference optimization (integrated but never run).</li>
+              <li>Joint objective &mdash; combine the two stages.</li>
+              <li>DPO on top of the fine-tuned adapter.</li>
+              <li>Extend the attribute interface to obstacle-aware cells.</li>
+              <li>Cross-backbone reward-quality comparison.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="https://github.com/UPB-RAT/llm-reward-pipeline">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            LLMAR &mdash; Paderborn University. Code at
+            <a href="https://github.com/UPB-RAT/llm-reward-pipeline">github.com/UPB-RAT/llm-reward-pipeline</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
